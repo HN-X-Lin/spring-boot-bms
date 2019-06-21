@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"></meta>
+        <title>footer</title>
+        <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+        <script th:src="@{/jquery-3.3.1.js}"></script>
+    </head>
+    <header th:fragment="header">
+        <div class="m-header">
+            <ul class="layui-nav layui-bg-green">
+                <li class="layui-nav-item"><a href="/userIndex">BMS前台</a></li>
+                <li class="layui-nav-item"><a href="/recommend">个性化推荐</a></li>
+                <li class="layui-nav-item"><a href="/elasticsearch">全文检索</a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">移动模块</a></dd>
+                        <dd><a href="">后台模版</a></dd>
+                        <dd><a href="">电商平台</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/userRecord" th:onclick="'javascript:show_user_record(\''+${userId}+'\');'">操作记录</a>
+                </li>
+                <li class="layui-nav-item ldm" lay-unselect="">
+                    <a href="javascript:;">
+                        <img th:src="${userPhoto}" class="layui-nav-img">
+                        <span th:text="${userName}"></span>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="#" id="parentIframe2" th:onclick="'javascript:show_user_info(\''+${userId}+'\');'">基本资料</a>
+                        </dd>
+                        <dd>
+                            <a href="#" id="parentIframe">修改密码</a>
+                        </dd>
+                        <dd>
+                            <a href="/userLogout">退出</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </header>
+</html>

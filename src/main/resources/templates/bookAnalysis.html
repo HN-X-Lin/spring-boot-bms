@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>spring-boot-bms</title>
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/table_select.js}"></script>
+    <script th:src="@{/common.js}"></script>
+    <script th:src="@{/echarts.min.js}"></script>
+
+</head>
+<style>
+    .layui-form-select .layui-input {
+        padding-right: 0px;
+        cursor: pointer;
+    }
+</style>
+<body class="layui-layout-body" onload="getUrl()">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="layout/adminHeader :: header"></div>
+    <div th:replace="layout/left :: left"></div>
+    <div class="layui-body" id="main_body">
+        <blockquote class="layui-elem-quote layui-text">
+            what are you looking for...
+        </blockquote>
+        <form class="layui-form" action="/bookAnalysis" lay-filter="example1">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                <label class="layui-form-label">年份</label>
+                <div class="layui-input-block">
+                    <select name="date1" lay-filter="aihao">
+                        <option value="2019-12-31" selected="">2019</option>
+                        <option value="2018-12-31">2018</option>
+                        <option value="2017-12-31">2017</option>
+                        <option value="2016-12-31">2016</option>
+                        <option value="2015-12-31">2015</option>
+                    </select>
+                </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table class="layui-hide" id="demo" lay-filter="test"></table>
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div style="height:400px;width:1200px;">
+            <div id="main" style="height:400px;width:600px;float: left;" ></div>
+            <div id="main1" style="height:400px;width:600px;float: right;"></div>
+        </div>
+    </div>
+    <div th:replace="layout/footer :: footer"></div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+        //表单初始赋值
+        form.val('example1', {
+            "now_year": '2019-12-31'
+        })
+    });
+</script>
+<script>
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.setOption({
+        title: {
+            text: '图书分类占比'
+        },
+        tooltip: {},
+        legend: {
+            data: ['数量']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '数量',
+            type: 'bar',
+            data: []
+        }]
+    });
+
+    // 异步加载数据
+    $.get('/book/type').done(function (data) {
+        myChart.hideLoading();
+        var xA = [];
+        var yA = [];
+        for (i = 0; i < data.length; i++) {
+            xA.push(data[i].bookType);
+            yA.push(data[i].cnt);
+        }
+        // 填入数据
+        myChart.setOption({
+            xAxis: {
+                data: xA
+            },
+            series: [{
+                // 根据名字对应到相应的系列
+                name: '数量',
+                data: yA
+            }]
+        });
+    });
+</script>
+<script>
+    var myChart2 = echarts.init(document.getElementById('main1'));
+    myChart2.setOption({
+        title: {
+            text: '图书分类占比',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: []
+        },
+        series: [
+            {
+                name: '分类',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: []
+            }
+        ]
+    });
+    // 异步加载数据
+    $.get('/book/type').done(function (data) {
+        myChart2.hideLoading();
+        var xA = [];
+        var yA = [];
+        for (i = 0; i < data.length; i++) {
+            xA.push(data[i].bookType);
+            yA.push({
+                value: data[i].cnt,
+                name: data[i].bookType
+            });
+        }
+        // 填入数据
+        myChart2.setOption({
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: xA
+            },
+            series: [
+                {
+                    name: '分类',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: yA
+                }
+            ]
+        });
+    });
+</script>
+<script type="text/html" id="barDemo2">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script th:inline="none">
+    var args = {};
+    args["date1"] = "2019-12-31";
+
+    function getUrl() {
+        if (location.search != "") {
+            var str = (location.search.length > 0 ? location.search.substring(1) : "");
+            var items = str.split("&");
+            var len = items.length, name, value;
+            for (i = 0; i < len; i++) {
+                item = items[i].split("=");
+                if (item[1].length > 0) {
+                    name = decodeURIComponent(item[0]);
+                    value = decodeURIComponent(item[1]);
+                    args[name] = value;
+                    console.log(value);
+                }
+            }
+        }
+        var ans = args["date1"].split("-");
+        var ss = ans[0] + "-01-01";
+        console.log(args["date1"]);
+        console.log(ss);
+        layui.use('table', function () {
+            var table = layui.table;
+            //展示已知数据
+            table.render({
+                elem: '#demo'
+                , url: '/record/rank'
+                , method: 'get'
+                , response: {
+                    statusCode: 200 //规定成功的状态码，默认：0
+                }
+                , where: {
+                    "date1": ss.toString(),
+                    "date2": args["date1"].toString()
+                }
+                , even: true
+                , page: true //是否显示分页
+                , limits: [3, 4, 5]
+                , limit: 4 //每页默认显示的数量
+                , parseData: function (res) {
+                    return {
+                        "code": 200
+                        , "msg": ""
+                        , "count": res.total
+                        , "data": res.list
+                    }
+                }
+                , toolbar: 'default' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                , cols: [[ //标题栏
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'bookId', title: 'ID', sort: true}
+                    , {field: 'bookName', title: '书名', sort: true}
+                    , {field: 'author', title: '作者', sort: true}
+                    , {field: 'press', title: '出版社', sort: true}
+                    , {field: 'bookDate', title: '出版日期', sort: true}
+                    , {field: 'cnt', title: '次数', sort: true}
+                    , {fixed: 'right',align: 'center', toolbar: '#barDemo2'}
+                ]]
+                //,skin: 'line' //表格风格
+
+            });
+            //监听头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data; //获取选中的数据
+                switch (obj.event) {
+                    case 'add':
+                        layer.msg('添加');
+                        break;
+                    case 'update':
+                        layer.msg('编辑');
+                        break;
+                    case 'delete':
+                        layer.msg('删除');
+                        break;
+                }
+                ;
+            });
+            //监听行工具事件
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data //获得当前行数据
+                    , layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'detail') {
+                    $.ajax({
+                        type: "get",
+                        url: "/book/find",
+                        data: {
+                            "bookId": data.bookId
+                        },
+                        success: function (data) {
+                            $("#bookId").val(data.bookId);
+                            $("#bookName").val(data.bookName);
+                            $("#author").val(data.author);
+                            $("#press").val(data.press);
+                            $("#bookDate").val(data.bookDate);
+                            $("#bookType").val(data.bookType);
+                            $("#bookDesc").val(data.bookDesc);
+                            $("#bookImage").attr("src", data.photo);
+                            layer.open({
+                                type: 1,
+                                // title: 'iframe父子操作',
+                                shadeClose: true, //点击遮罩关闭层
+                                area: ['800px', '520px'],
+                                content: $("#show_row"),
+                                cancel: function (index, layero) {
+                                    $("#show_row").hide();
+                                }
+                            });
+
+                        }
+                    });
+
+                } else if (layEvent === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        //向服务端发送删除指令
+                        $.ajax({
+                            type: "post",
+                            url: "/book/delete",
+                            data: {
+                                "bookId": data.bookId
+                            },
+                            success: function (data) {
+                                if (data > 0) {
+                                    obj.del(); //删除对应行（tr）的DOM结构
+                                    layer.close(index);
+                                    alert("图书删除成功");
+                                    window.location.reload();
+                                } else {
+                                    alert("图书删除失败");
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                } else if (layEvent === 'edit') {
+                    $.ajax({
+                        type: "get",
+                        url: "/book/find",
+                        data: {
+                            "bookId": data.bookId
+                        },
+                        success: function (data) {
+                            $("#_bookId").val(data.bookId);
+                            $("#_bookName").val(data.bookName);
+                            $("#_author").val(data.author);
+                            $("#_press").val(data.press);
+                            $("#_bookDate").val(data.bookDate);
+                            $("#_bookType").val(data.bookType);
+                            $("#_bookDesc").val(data.bookDesc);
+                            $("#_bookImage").val(data.photo);
+                            layer.open({
+                                type: 1,
+                                // title: 'iframe父子操作',
+                                shadeClose: true, //点击遮罩关闭层
+                                area: ['800px', '520px'],
+                                content: $("#edit_row"),
+                                cancel: function (index, layero) {
+                                    $("#edit_row").hide();
+                                }
+                            });
+
+                        }
+                    });
+                }
+            });
+        });
+    }
+</script>
+<div th:replace="common :: myInfo"></div>
+<div th:replace="common :: myPw"></div>
+<div th:replace="common :: showBookRow"></div>
+<div th:replace="common :: editBookRow"></div>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form;
+    });
+</script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+        element.init();
+    });
+
+</script>
+<script>
+    // 展示修改密码界面
+    $('#parentIframe').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#info"),
+            cancel: function (index, layero) {
+                $("#info").hide();
+            }
+        });
+    });
+    // 展示基本资料界面
+    $('#parentIframe2').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#owninfo"),
+            cancel: function (index, layero) {
+                $("#owninfo").hide();
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neo.dao.AdminDao" >
+    <sql id="BASE_TABLE">
+    t_admin
+  </sql>
+
+    <insert id="insert" parameterType="com.neo.model.AdminDomain">
+        INSERT INTO
+        <include refid="BASE_TABLE"/>
+        values(#{role},#{adminId},#{adminName},#{sex},#{photo},#{phone},#{email},#{remark})
+    </insert>
+
+    <select id="selectAdmins" resultType="com.neo.model.AdminDomain">
+        SELECT
+        *
+        FROM
+        <include refid="BASE_TABLE"/>
+        <where>
+            <if test="adminId!=0">
+                adminId=#{adminId}
+            </if>
+            <if test="adminName!='#'.toString()">
+                and adminName like #{adminName}
+            </if>
+            <if test="sex!='#'.toString()">
+                and sex=#{sex}
+            </if>
+            <if test="role!='#'.toString()">
+                and role=#{role}
+            </if>
+        </where>
+    </select>
+    <select id="selectAdminById" resultType="com.neo.model.AdminDomain">
+        SELECT
+        *
+        FROM
+        <include refid="BASE_TABLE"/>
+        where adminId=#{adminId}
+    </select>
+    <update id="update" parameterType="com.neo.model.AdminDomain">
+        update
+        <include refid="BASE_TABLE"/>
+        set adminName=#{adminName},sex=#{sex},photo=#{photo},phone=#{phone},email=#{email},remark=#{remark}
+        where adminId=#{adminId}
+    </update>
+    <select id="login" resultType="com.neo.model.AdminDomain">
+        SELECT t_admin.* FROM admin LEFT JOIN t_admin ON t_admin.adminId=admin.adminId
+        WHERE admin.adminId=#{adminId} AND adminPw=#{adminPw}
+    </select>
+    <update id="updatePw">
+        update admin set adminPw=#{adminPw} where adminId=#{adminId}
+    </update>
+    <update id="updateUser">
+        update
+        t_user
+        set userName=#{userName},sex=#{sex},phone=#{phone},email=#{email}
+        where userId=#{userId}
+    </update>
+</mapper>

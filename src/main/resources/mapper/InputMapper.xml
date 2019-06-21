@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neo.dao.InputDao">
+
+    <select id="selectAuthors" resultType="com.neo.model.InputDomain">
+        SELECT DISTINCT(author) as inputName,@rownum := @rownum +1 as inputId from (SELECT @rownum:=0) as r,(SELECT DISTINCT(author) FROM book) AS new_book
+    </select>
+    <select id="selectPresss" resultType="com.neo.model.InputDomain">
+        SELECT DISTINCT(press) as inputName,@rownum := @rownum +1 as inputId from (SELECT @rownum:=0) as r,(SELECT DISTINCT(press) FROM book) AS new_book
+    </select>
+    <select id="selectTypes" resultType="com.neo.model.InputDomain">
+        SELECT DISTINCT(bookType) as inputName,@rownum := @rownum +1 as inputId from (SELECT @rownum:=0) as r,(SELECT DISTINCT(bookType) FROM book) AS new_book
+    </select>
+</mapper>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>spring-boot-bms</title>
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/search.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/common.js}"></script>
+
+
+</head>
+<style>
+    .layui-form-select .layui-input {
+        padding-right: 0px;
+        cursor: pointer;
+    }
+</style>
+<body class="layui-layout-body" onload="getUrl()">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="layout/adminHeader :: header"></div>
+    <div th:replace="layout/left :: left"></div>
+    <div class="layui-body" id="main_body">
+        <!-- 内容主体区域 -->
+        <blockquote class="layui-elem-quote layui-text">
+            what are you looking for...
+        </blockquote>
+
+        <form class="layui-form" action="/manager" lay-filter="example1">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="s_adminId" autocomplete="off" placeholder="请输入" class="layui-input">
+                </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="s_adminName" placeholder="请输入"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-block">
+                    <select name="s_sex" lay-filter="aihao">
+                        <option value="" selected=""></option>
+                        <option value="男">男</option>
+                        <option value="女" >女</option>
+                    </select>
+                </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <select name="s_role" lay-filter="aihao">
+                            <option value="" selected=""></option>
+                            <option value="管理员">管理员</option>
+                            <option value="运营人员">运营人员</option>
+                            <option value="超级管理员" >超级管理员</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <button onclick="search_user()" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table class="layui-hide" id="demo" lay-filter="test"></table>
+    </div>
+    <div th:replace="layout/footer :: footer"></div>
+</div>
+<div th:replace="common :: myPw"></div>
+<div th:replace="common :: myInfo"></div>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form;
+        //表单初始赋值
+        form.val('example1', {
+            "s_sex": ''
+        })
+        form.val('example1', {
+            "s_role": ''
+        })
+
+    });
+</script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+        element.init();
+    });
+
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script th:inline="none">
+    var args = {};
+    args["s_adminId"] = 0, args["s_adminName"] = "#", args["s_sex"] = "#",args["s_role"] = "#";
+
+    function getUrl() {
+        if (location.search != "") {
+            var str = (location.search.length > 0 ? location.search.substring(1) : "");
+            var items = str.split("&");
+            var len = items.length, name, value;
+            for (i = 0; i < len; i++) {
+                item = items[i].split("=");
+                if (item[1].length > 0) {
+                    name = decodeURIComponent(item[0]);
+                    value = decodeURIComponent(item[1]);
+                    args[name] = value;
+                    console.log(value);
+                }
+            }
+        }
+        layui.use('table', function () {
+            var table = layui.table;
+            //展示已知数据
+            table.render({
+                elem: '#demo'
+                , url: '/admin/all'
+                , method: 'get'
+                , response: {
+                    statusCode: 200 //规定成功的状态码，默认：0
+                }
+                , where: {
+                    "adminId": args["s_adminId"],
+                    "adminName": args["s_adminName"].toString(),
+                    "sex": args["s_sex"].toString(),
+                    "role": args["s_role"].toString()
+                }
+                , even: true
+                , page: true //是否显示分页
+                , limits: [2, 3, 4]
+                , limit: 2 //每页默认显示的数量
+                , parseData: function (res) {
+                    return {
+                        "code": 200
+                        , "msg": ""
+                        , "count": res.total
+                        , "data": res.list
+                    }
+                }
+                , toolbar: 'default' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                , cols: [[ //标题栏
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'adminId', title: 'ID', sort: true}
+                    , {field: 'adminName', title: '昵称'}
+                    , {field: 'sex', title: '性别'}
+                    , {field: 'phone', title: '电话'}
+                    , {field: 'email', title: '邮箱'}
+                    , {field: 'role', title: '角色'}
+                    , {fixed: 'right', align: 'center', toolbar: '#barDemo'}
+                ]]
+                //,skin: 'line' //表格风格
+
+            });
+            //监听头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data; //获取选中的数据
+                switch (obj.event) {
+                    case 'add':
+                        layer.msg('添加');
+                        break;
+                    case 'update':
+                        if (data.length === 0) {
+                            layer.msg('请选择一行');
+                        } else if (data.length > 1) {
+                            layer.msg('只能同时编辑一个');
+                        } else {
+                            layer.alert('编辑 [id]：' + checkStatus.data[0].id);
+                        }
+                        break;
+                    case 'delete':
+                        if (data.length === 0) {
+                            layer.msg('请选择一行');
+                        } else {
+                            layer.msg('删除');
+                        }
+                        break;
+                }
+                ;
+            });
+            //监听行工具事件
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data //获得当前行数据
+                    , layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        obj.del(); //删除对应行（tr）的DOM结构
+                        layer.close(index);
+                        //向服务端发送删除指令
+                    });
+                } else if (layEvent === 'edit') {
+                    layer.msg('编辑操作');
+                }
+            });
+        });
+    }
+</script>
+<script>
+    // 展示修改密码界面
+    $('#parentIframe').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#info"),
+            cancel: function (index, layero) {
+                $("#info").hide();
+            }
+        });
+    });
+    // 展示基本资料界面
+    $('#parentIframe2').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#owninfo"),
+            cancel: function (index, layero) {
+                $("#owninfo").hide();
+            }
+        });
+    });
+</script>
+</body>
+</html>

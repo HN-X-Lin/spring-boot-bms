@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>spring-boot-bms</title>
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/common.js}"></script>
+</head>
+<style>
+    .ldm {
+        position: absolute !important;
+        right: 20px;
+        top: 0;
+    }
+    .layui-form-select .layui-input {
+         padding-right: 0px;
+        cursor: pointer;
+    }
+    .dom {
+        position: relative;
+        right: 0;
+        top: 0px;
+        bottom: 0;
+        z-index: 998;
+        width: auto;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .m-header {
+        z-index: 1000;
+        height: 60px;
+        position: relative;
+    }
+</style>
+<body class="layui-layout-body" th:onload="'javascript:getUrl(\''+${userId}+'\');'">
+<div th:replace="layout/header :: header"></div>
+<div class="dom">
+    <form class="layui-form" action="/userRecord" accept-charset="UTF-8" lay-filter="example2">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="r_bookId" placeholder="请输入"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">书名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="r_bookName" placeholder="请输入"
+                           autocomplete="off" class="layui-input" baiduSug=1>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-block">
+                    <select name="operation" lay-filter="aihao">
+                        <option value="" selected=""></option>
+                        <option value="借阅">借阅</option>
+                        <option value="续借">续借</option>
+                        <option value="归还">归还</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">范围</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="r_date1" name="date1" placeholder="yyyy-MM" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="r_date2" name="date2" placeholder="yyyy-MM" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="demo" lay-filter="test"></table>
+</div>
+<!--<div th:replace="layout/footer :: footer"></div>-->
+<div th:replace="common :: myInfo"></div>
+<div th:replace="common :: myPw"></div>
+<div th:replace="common :: showBookRow"></div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        //表单初始赋值
+        form.val('example2', {
+            "operation": ''
+        })
+    });
+    layui.use('element', function () {
+        var element = layui.element;
+        element.init();
+    });
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#r_date1'
+        });
+        laydate.render({
+            elem: '#r_date2'
+        });
+    });
+</script>
+<script type="text/html" id="barDemo2">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script th:inline="none">
+    var args = {};
+    args["r_bookId"] = 0, args["r_bookName"] = "#", args["operation"] = "#", args["date1"] = "#", args["date2"] = "#";
+
+    function getUrl(id) {
+        if (location.search != "") {
+            var str = (location.search.length > 0 ? location.search.substring(1) : "");
+            var items = str.split("&");
+            var len = items.length, name, value;
+            for (i = 0; i < len; i++) {
+                item = items[i].split("=");
+                if (item[1].length > 0) {
+                    name = decodeURIComponent(item[0]);
+                    value = decodeURIComponent(item[1]);
+                    args[name] = value;
+                    console.log(value);
+                }
+            }
+        }
+        layui.use('table', function () {
+            var table = layui.table;
+            //展示已知数据
+            table.render({
+                elem: '#demo'
+                , url: '/record/user'
+                , method: 'get'
+                , response: {
+                    statusCode: 200 //规定成功的状态码，默认：0
+                }
+                , where: {
+                    "userId": id,
+                    "bookId": args["r_bookId"],
+                    "bookName": args["r_bookName"].toString(),
+                    "operation": args["operation"].toString(),
+                    "date1": args["date1"].toString(),
+                    "date2": args["date2"].toString()
+                }
+                , even: true
+                , page: true //是否显示分页
+                , limits: [3, 4, 5]
+                , limit: 4 //每页默认显示的数量
+                , parseData: function (res) {
+                    return {
+                        "code": 200
+                        , "msg": ""
+                        , "count": res.total
+                        , "data": res.list
+                    }
+                }
+                , toolbar: 'default' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                , cols: [[ //标题栏
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'bookId', title: 'ID', sort: true}
+                    , {field: 'bookName', title: '书名', sort: true}
+                    , {field: 'operation', title: '类型', sort: true}
+                    , {field: 'opDate', title: '日期', sort: true}
+                    , {fixed: 'right', align: 'center', toolbar: '#barDemo2'}
+                ]]
+                //,skin: 'line' //表格风格
+
+            });
+            //监听头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data; //获取选中的数据
+                switch (obj.event) {
+                    case 'add':
+                        layer.msg("Permission denied");
+                        break;
+                    case 'update':
+                        layer.msg("Permission denied");
+                        break;
+                    case 'delete':
+                        layer.msg("Permission denied");
+                }
+                ;
+            });
+            //监听行工具事件
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data //获得当前行数据
+                    , layEvent = obj.event; //获得 lay-event 对应的值
+                if (layEvent === 'detail') {
+                    $.ajax({
+                        type: "get",
+                        url: "/book/find",
+                        data: {
+                            "bookId": data.bookId
+                        },
+                        success: function (data) {
+                            $("#bookId").val(data.bookId);
+                            $("#bookName").val(data.bookName);
+                            $("#author").val(data.author);
+                            $("#press").val(data.press);
+                            $("#bookDate").val(data.bookDate);
+                            $("#bookType").val(data.bookType);
+                            $("#bookDesc").val(data.bookDesc);
+                            $("#bookImage").attr("src", data.photo);
+                            layer.open({
+                                type: 1,
+                                // title: 'iframe父子操作',
+                                shadeClose: true, //点击遮罩关闭层
+                                area: ['800px', '520px'],
+                                content: $("#show_row"),
+                                cancel: function (index, layero) {
+                                    $("#show_row").hide();
+                                }
+                            });
+
+                        }
+                    });
+
+                } else if (layEvent === 'del') {
+                    layer.msg("Permission denied");
+                } else if (layEvent === 'edit') {
+                    layer.msg("Permission denied");
+                }
+            });
+        });
+    }
+</script>
+<script>
+    // 展示修改密码界面
+    $('#parentIframe').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#info2"),
+            cancel: function (index, layero) {
+                $("#info2").hide();
+            }
+        });
+    });
+    // 展示基本资料界面
+    $('#parentIframe2').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#owninfo2"),
+            cancel: function (index, layero) {
+                $("#owninfo2").hide();
+            }
+        });
+    });
+</script>
+</body>
+</html>

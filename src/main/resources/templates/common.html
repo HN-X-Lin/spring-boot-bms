@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--基本资料模块-->
+<div id="owninfo" style="display: none;" th:fragment="myInfo">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>设置我的资料</legend>
+    </fieldset>
+
+    <form class="layui-form" lay-filter="example" id="edit_info" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">我的角色</label>
+            <div class="layui-input-inline">
+                <input type="text" name="role" id="role" disabled lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">当前角色不可更改为其它角色</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="adminId" id="adminId" disabled lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" id="adminName" name="adminName" lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sex" id="sex" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">头像</label>
+            <div class="layui-input-inline">
+                <input type="text" id="photo" name="photo" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-inline">
+                <input type="text" id="phone" name="phone" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" id="email" name="email" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea id="remark" placeholder="请输入内容" class="layui-textarea" name="remark"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1" onclick="update_info()">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--用户-基本资料模块-->
+<div id="owninfo2" style="display: none;" th:fragment="myInfo2">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>设置我的资料</legend>
+    </fieldset>
+
+    <form class="layui-form" lay-filter="example" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="userId" id="userId" disabled lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">不可修改。一般用于前台登入名</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" id="userName" name="userName" lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sex" id="sex" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">头像</label>
+            <div class="layui-input-inline">
+                <input type="text" id="photo" name="photo" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-inline">
+                <input type="text" id="phone" name="phone" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" id="email" name="email" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">兴趣</label>
+            <div class="layui-input-inline">
+                <textarea id="myInterest" class="layui-textarea" name="description"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1" onclick="update_user_info()">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--图书管理~查看行数据模块-->
+<div id="show_row" style="display: none;" th:fragment="showBookRow">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>查看行数据</legend>
+    </fieldset>
+
+    <form class="layui-form" action="" lay-filter="example">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">书号</label>
+            <div class="layui-input-inline">
+                <input id="bookId" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input id="bookName" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input id="author" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input id="press" type="text" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版日期</label>
+            <div class="layui-input-inline">
+                <input id="bookDate" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-inline">
+                <input id="bookType" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea id="bookDesc" class="layui-textarea" name="description"></textarea>
+            </div>
+        </div>
+        <img id="bookImage"
+             src="https://img14.360buyimg.com/n1/s200x200_jfs/t1/2387/37/10035/244618/5bc98f0fEd0031c63/cf9b8a4c93faecda.jpg"/>
+    </form>
+</div>
+<!--前台~用户借阅模块-->
+<div id="show_row" style="display: none;" th:fragment="lendBook">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>图书信息</legend>
+    </fieldset>
+
+    <form class="layui-form" action="" lay-filter="example">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">书号</label>
+            <div class="layui-input-inline">
+                <input id="bookId" type="text" disabled name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input id="bookName" type="text" disabled name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input id="author" type="text" disabled name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input id="press" type="text" disabled name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版日期</label>
+            <div class="layui-input-inline">
+                <input id="bookDate" type="text" disabled name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-inline">
+                <input id="bookType" type="text" disabled name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea id="bookDesc" class="layui-textarea" disabled name="description"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button th:onclick="'javascript:do_lend(\''+${userId}+'\');'" class="layui-btn" lay-submit="" lay-filter="demo1">立即借阅</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--图书管理~编辑行数据模块-->
+<div id="edit_row" style="display: none;" th:fragment="editBookRow">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>编辑行数据</legend>
+    </fieldset>
+
+    <form class="layui-form" action="" lay-filter="example">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">书号</label>
+            <div class="layui-input-inline">
+                <input id="_bookId" type="text" name="username" disabled lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input id="_bookName" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input id="_author" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input id="_press" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版日期</label>
+            <div class="layui-input-inline">
+                <input id="_bookDate" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-inline">
+                <input id="_bookType" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea id="_bookDesc" class="layui-textarea" name="description"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片</label>
+            <div class="layui-input-inline">
+                <input id="_bookImage" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">请输入图片地址</div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button onclick="do_edit()" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--图书管理~图书入库模块-->
+<div id="new_book" style="display: none;" th:fragment="newBook">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>图书入库</legend>
+    </fieldset>
+
+    <form class="layui-form" action="" lay-filter="example">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">书号</label>
+            <div class="layui-input-inline">
+                <input id="new_bookId" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">书号为int型</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input id="new_bookName" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input id="new_author" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input id="new_press" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版日期</label>
+            <div class="layui-input-inline">
+                <input id="new_bookDate" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-inline">
+                <input id="new_bookType" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea id="new_bookDesc" class="layui-textarea" name="description"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片</label>
+            <div class="layui-input-inline">
+                <input id="new_bookImage" type="text" name="username" lay-verify="required" placeholder="请输入"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">请输入图片地址</div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button onclick="do_add()" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--修改密码模块-->
+<div id="info" style="display: none;" th:fragment="myPw">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>修改密码</legend>
+    </fieldset>
+
+    <form class="layui-form" lay-filter="example" method="post">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">当前密码</label>
+            <div class="layui-input-inline">
+                <input id="now_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input id="new_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认新密码</label>
+            <div class="layui-input-inline">
+                <input id="again_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1" th:onclick="'javascript:edit_pass(\''+${myId}+'\');'">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--用户-修改密码模块-->
+<div id="info2" style="display: none;" th:fragment="myPw2">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>修改密码</legend>
+    </fieldset>
+
+    <form class="layui-form" lay-filter="example" method="post">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">当前密码</label>
+            <div class="layui-input-inline">
+                <input id="now_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input id="new_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认新密码</label>
+            <div class="layui-input-inline">
+                <input id="again_pass" type="password" name="username" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1" th:onclick="'javascript:edit_user_pass(\''+${userId}+'\');'">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--用户管理~修改行数据模块-->
+<div id="show_user_row" style="display: none;" th:fragment="userInfo">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>设置用户资料</legend>
+    </fieldset>
+
+    <form class="layui-form" lay-filter="example" method="post">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" id="r_userId" disabled lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">不可修改。一般用于前台登入名</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" id="r_userName" lay-verify="required" placeholder="请输入"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" id="r_sex" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-inline">
+                <input type="text" id="r_phone" name="phone" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" id="r_email" name="email" lay-verify="required" placeholder="请输入" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1" onclick="manager_update_user_info()">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--图书查询模块-->
+<form class="layui-form" action="/bookManage" accept-charset="UTF-8" th:fragment="book_search">
+    <div class="layui-form-item">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="s_bookId" autocomplete="off" placeholder="请输入" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书名</label>
+        <div class="layui-input-block">
+            <input type="text" name="s_bookName" placeholder="请输入"
+                   autocomplete="off" class="layui-input" baiduSug=1>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">作者</label>
+        <div class="layui-input-block">
+            <input type="text" name="s_author" placeholder="请输入"
+                   autocomplete="off" class="layui-input" id="find_author">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出版社</label>
+        <div class="layui-input-block">
+            <input type="text" name="s_press" placeholder="请输入"
+                   autocomplete="off" class="layui-input" id="find_press">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类</label>
+        <div class="layui-input-block">
+            <input type="text" name="s_bookType" placeholder="请输入"
+                   autocomplete="off" class="layui-input" id="find_type">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">范围</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" id="date1" name="s_date1" placeholder="yyyy-MM" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" id="date2" name="s_date2" placeholder="yyyy-MM" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<div class="layui-fluid" th:fragment="dashboard">
+    <div class="layui-row layui-col-space15">
+
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    访问量
+                    <span class="layui-badge layui-bg-blue layuiadmin-badge">周</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+                    <p class="layuiadmin-big-font">9</p>
+                    <p>
+                        总计访问量
+                        <span class="layuiadmin-span-color">30<i class="layui-inline layui-icon layui-icon-flag"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    用户量
+                    <span class="layui-badge layui-bg-cyan layuiadmin-badge">月</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+                    <p class="layuiadmin-big-font">33</p>
+                    <p>
+                        新增
+                        <span class="layuiadmin-span-color">10% <i class="layui-inline layui-icon layui-icon-face-smile-b"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    库存量
+                    <span class="layui-badge layui-bg-green layuiadmin-badge">年</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font">99</p>
+                    <p>
+                        总库存
+                        <span class="layuiadmin-span-color">11<i class="layui-inline layui-icon layui-icon-dollar"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    活跃用户
+                    <span class="layui-badge layui-bg-orange layuiadmin-badge">月</span>
+                </div>
+                <div class="layui-card-body layuiadmin-card-list">
+
+                    <p class="layuiadmin-big-font">6</p>
+                    <p>
+                        最近一个月
+                        <span class="layuiadmin-span-color">15%<i class="layui-inline layui-icon layui-icon-user"></i></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

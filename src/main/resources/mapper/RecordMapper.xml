@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neo.dao.RecordDao" >
+    <sql id="BASE_TABLE">
+    record
+  </sql>
+    <select id="selectRecords" resultType="com.neo.model.RecordDomain">
+        SELECT t_user.userId,t_user.userName,record.bookid,bookName,operation,opDate,author,press,bookDate
+        ,COUNT(id) AS cnt FROM record LEFT JOIN book ON book.bookId=record.bookId
+        LEFT JOIN t_user ON t_user.userId=record.userId
+        <where>
+            <if test="userId!=0">
+                t_user.userId=#{userId}
+            </if>
+            <if test="userName!='#'.toString()">
+                and userName like #{userName}
+            </if>
+            <if test="bookId!=0">
+                record.bookId=#{bookId}
+            </if>
+            <if test="bookName!='#'.toString()">
+                and bookName like #{bookName}
+            </if>
+            <if test="operation!='#'.toString()">
+                and operation=#{operation}
+            </if>
+            <if test="date1!='#'.toString()">
+                and opDate &gt;= #{date1}
+            </if>
+            <if test="date2!='#'.toString()">
+                and opDate &lt;= #{date2}
+            </if>
+        </where>
+        GROUP BY id ORDER BY opDate desc
+    </select>
+    <select id="selectRank" resultType="com.neo.model.RecordDomain">
+        SELECT t_user.userId,t_user.userName,record.bookid,bookName,operation,opDate,author,press,bookDate
+        ,COUNT(id) AS cnt FROM record LEFT JOIN book
+        ON book.bookId=record.bookId LEFT JOIN t_user ON t_user.userId=record.userId
+        <where>
+            operation="借阅"
+            <if test="date1!='#'.toString()">
+                and opDate &gt;= #{date1}
+            </if>
+            <if test="date2!='#'.toString()">
+                and opDate &lt;= #{date2}
+            </if>
+        </where>
+        GROUP BY record.bookId ORDER BY cnt DESC
+    </select>
+    <select id="selectTypeByYear" resultType="com.neo.model.RecordDomain">
+        SELECT bookType,year(STR_TO_DATE(opDate,"%Y-%m-%d")) as period,COUNT(*) AS cnt
+        FROM record LEFT JOIN book ON book.bookId=record.bookId
+        GROUP BY bookType,period order by period
+    </select>
+    <select id="selectComments" resultType="com.neo.model.RecordDomain">
+        SELECT `comment`.*,userName,photo FROM `comment`
+        LEFT JOIN t_user ON `comment`.userId=t_user.userId WHERE `comment`.bookId=#{bookId}
+        ORDER BY opDate desc
+    </select>
+    <select id="selectRecordByUser" resultType="com.neo.model.RecordDomain">
+        SELECT record.bookid,bookName,operation,opDate,author,press,bookDate
+        ,COUNT(id) AS cnt FROM record LEFT JOIN book ON book.bookId=record.bookId
+        <where>
+            <if test="userId!=0">
+                userId=#{userId}
+            </if>
+            <if test="bookId!=0">
+                and record.bookId=#{bookId}
+            </if>
+            <if test="bookName!='#'.toString()">
+                and bookName like #{bookName}
+            </if>
+            <if test="operation!='#'.toString()">
+                and operation=#{operation}
+            </if>
+            <if test="date1!='#'.toString()">
+                and opDate &gt;= #{date1}
+            </if>
+            <if test="date2!='#'.toString()">
+                and opDate &lt;= #{date2}
+            </if>
+        </where>
+        GROUP BY id ORDER BY opDate desc
+    </select>
+    <insert id="addComment">
+        insert into comment(bookId,userId,opDate,content) values(#{bookId},#{userId},#{opDate},#{content});
+    </insert>
+    <select id="checkClick" resultType="int">
+        select count(*) from recommend where userId=#{userId} and bookId=#{bookId}
+    </select>
+    <update id="updateClick">
+        update recommend set clickNum=clickNum+1 where userId=#{userId} and bookId=#{bookId}
+    </update>
+    <insert id="insertClick">
+        insert into recommend(userId,bookId,clickNUm) values(#{userId},#{bookId},1);
+    </insert>
+</mapper>

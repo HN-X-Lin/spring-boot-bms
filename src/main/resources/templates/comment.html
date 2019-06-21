@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>spring-boot-bms</title>
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/template.css}" media="all">
+<!--    <link rel="stylesheet" th:href="@{/css/admin.css}" media="all">-->
+    <link rel="stylesheet" th:href="@{/css/pagination.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/pagination.min.js}"></script>
+</head>
+<body onload="getUrl()">
+<div class="layui-fluid layadmin-message-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <form class="layui-form">
+                <div class="layui-form-item layui-form-text">
+                    <div class="layui-input-block">
+                        <textarea id="commentId" name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="overflow: hidden;">
+                    <div class="layui-input-block layui-input-right">
+                        <button class="layui-btn" type="button" lay-filter="formDemo" th:onclick="'javascript:send_comment(\''+${userId}+'\');'">发表</button>
+                    </div>
+                    <div class="layadmin-messag-icon">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-face-smile-b"></i></a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-picture"></i></a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-link"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content" id="dd">
+        </div>
+    </div>
+</div>
+</div>
+<div id="pagination-container"></div>
+<script>
+    var args = {};
+    args["bookId"] = 0;
+    function getUrl() {
+        if(location.search!=""){
+            var str = (location.search.length > 0 ? location.search.substring(1) : "");
+            var len = str.length;
+            for (i = 0; i < len; i++) {
+                item = str.split("=");
+                if (item[1].length > 0) {
+                    args[item[0]] = item[1];
+                }
+            }
+        }
+        $('#pagination-container').pagination({
+            dataSource: 'record/comment', //请求的url
+            ajax:{
+                type:'get',
+                url:'/record/comment',
+                data:{
+                    "page": 1,
+                    "limit": 10000000,
+                    "bookId": args["bookId"]
+                }
+            },
+            locator: 'list', //返回值data的位置
+            totalNumberLocator: function (res) { //返回值总数量的位置
+                return Math.floor(res.total);
+            },
+            numPerPage: 10,
+            pageRange: 1,
+            className: 'paginationjs-theme-blue',
+            prevText: '<&nbsp;上一页',
+            nextText: '下一页&nbsp;>',
+            showGoInput: true,
+            showGoButton: true,
+            callback: function (res, pagination) {   //回掉函数
+                console.log(res);
+                $.ajax({
+                    type: "get",
+                    url: "/record/comment",
+                    data: {
+                        "page": pagination.pageNumber,
+                        "limit": 10,
+                        "bookId": args["bookId"]
+                    },
+                    success: function (data) {
+                        $("#dd").empty();
+                        var v = data.list;
+                        for (i = 0; i < v.length; i++) {
+                            var photo = v[i].photo;
+                            var userName=v[i].userName;
+                            var opDate=v[i].opDate;
+                            var content=v[i].content;
+                            $("#dd").append("<div class=\"media-body\">\n" +
+                                "                <a href=\"javascript:;\" class=\"media-left\" style=\"float: left;\">\n" +
+                                "                    <img src="+photo+" height=\"46px\" width=\"46px\">\n" +
+                                "                </a>\n" +
+                                "                <div class=\"pad-btm\">\n" +
+                                "                    <p class=\"fontColor\"><a href=\"javascript:;\">"+userName+"</a></p>\n" +
+                                "                    <p class=\"min-font\">\n" +
+                                "\t\t\t\t\t\t\t\t<span lay-separator=\"-\">\n" +
+                                "\t\t\t\t\t\t\t\t\t<a href=\"javascript:;\">"+opDate+"</a>\n"+
+                                "\t\t\t\t\t\t\t\t</span>\n" +
+                                "                    </p>\n" +
+                                "                </div>\n" +
+                                "                <p class=\"message-text\">"+content+"</p>\n" +
+                                "            </div>");
+                        }
+
+                    }
+                });
+
+            }
+        });
+    }
+</script>
+<script>
+    function send_comment(id) {
+        $.ajax({
+            type: "post",
+            url: "/record/add",
+            data: {
+                "userId":id,
+                "bookId": args["bookId"],
+                "content":$("#commentId").val()
+
+            },
+            success: function (data) {
+                if(data>0){
+                    layer.msg("success");
+                }else
+                    layer.msg("fail");
+            }
+        });
+    }
+</script>
+<!--<script th:src="@{/layui.all.js}"></script>-->
+</body>
+</html>

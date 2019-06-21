@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neo.dao.UserDao" >
+    <sql id="BASE_TABLE">
+    t_user
+  </sql>
+
+    <sql id="BASE_COLUMN">
+    userId,userName,password,phone
+  </sql>
+
+    <insert id="insert" parameterType="com.neo.model.UserDomain">
+        INSERT INTO
+        <include refid="BASE_TABLE"/>
+        values(#{userId},#{userName},#{sex},#{phone},#{email})
+    </insert>
+
+    <select id="selectUsers" resultType="com.neo.model.UserDomain">
+        SELECT
+        *
+        FROM
+        <include refid="BASE_TABLE"/>
+        <where>
+            <if test="userId!=0">
+                userId=#{userId}
+            </if>
+            <if test="userName!='#'.toString()">
+                and userName like #{userName}
+            </if>
+            <if test="sex!='#'.toString()">
+                and sex=#{sex}
+            </if>
+        </where>
+    </select>
+    <select id="selectUserById" resultType="com.neo.model.UserDomain">
+        SELECT t_user.*,myInterest FROM `t_user` RIGHT JOIN interest
+        ON t_user.userId=interest.userId WHERE t_user.userId=#{userId};
+    </select>
+    <select id="login" resultType="com.neo.model.UserDomain">
+        select * from t_user where userId=#{userId} and userPw=#{userPw}
+    </select>
+    <update id="updatePw">
+        update t_user set userPw=#{userPw} where userId=#{userId}
+    </update>
+    <update id="update" parameterType="com.neo.model.UserDomain">
+        update
+        <include refid="BASE_TABLE"/>
+        set userName=#{userName},sex=#{sex},photo=#{photo},phone=#{phone},email=#{email}
+        where userId=#{userId}
+    </update>
+    <delete id="delete">
+        DELETE FROM
+        <include refid="BASE_TABLE"/>
+        WHERE userId=#{userId}
+    </delete>
+    <insert id="lend">
+        insert into record(userId,bookId,returnDate,operation,opDate) values(#{userId},#{bookId},#{returnDate}
+        ,'借阅',#{opDate})
+    </insert>
+    <delete id="deleteInterest">
+        delete from interest
+        where userId=#{userId}
+    </delete>
+    <insert id="insertInterest">
+        insert into interest(userId,myInterest) values(#{userId},#{myInterest});
+    </insert>
+</mapper>

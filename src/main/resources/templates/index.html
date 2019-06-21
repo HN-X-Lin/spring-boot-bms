@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>spring-boot-bms</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/table_select.js}"></script>
+    <script th:src="@{/common.js}"></script>
+    <script th:src="@{/echarts.min.js}"></script>
+
+</head>
+<style>
+    .layui-badge {
+        position: absolute;
+        display: inline-block;
+        padding: 0 6px;
+        font-size: 12px;
+        text-align: center;
+        background-color: #FF5722;
+        color: #fff;
+        border-radius: 2px;
+    }
+    .layui-layout-admin .layui-layout-left .layui-nav-item {
+        margin: 0 0px;
+    }
+</style>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="layout/adminHeader :: header"></div>
+    <div th:replace="layout/left :: left"></div>
+    <div class="layui-body" id="main_body">
+        <blockquote class="layui-elem-quote layui-text">
+            数据可视化
+        </blockquote>
+        <div th:replace="common :: dashboard"></div>
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="main" style="width: 600px;height:400px;"></div>
+    </div>
+    <div th:replace="layout/footer :: footer"></div>
+</div>
+<script charset="gbk" src="http://www.baidu.com/js/opensug.js"></script>
+<script>
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.setOption({
+        legend: {},
+        tooltip: {
+            trigger: 'axis',
+            showContent: false
+        },
+        dataset: {
+            source: []
+        },
+        xAxis: {
+            type: 'category'
+        },
+        yAxis: {
+            gridIndex: 0
+        },
+        grid: {
+            top: '55%'
+        },
+        series: []
+    });
+
+    // 异步加载数据
+    $.get('/record/year').done(function (data) {
+        console.log(data);
+        var year=new Set();
+        year.add("product");
+        var bookType=new Set();
+        for(i=0;i<data.length;i++){
+            year.add(data[i].period);
+            bookType.add(data[i].bookType);
+        }
+        var ans=[];
+        var temp=[];
+        for(let item of year) temp.push(item);
+        ans.push(temp);
+        var con=[];
+        for(let itm of bookType){
+            con.push({type: 'line', smooth: true, seriesLayoutBy: 'row'});
+        }
+        con.push({
+            type: 'pie',
+            id: 'pie',
+            radius: '30%',
+            center: ['50%', '25%'],
+            label: {
+                formatter: '{b}: {@2012} ({d}%)'
+            },
+            encode: {
+                itemName: 'product',
+                value: '2012',
+                tooltip: '2012'
+            }
+        });
+        for(let item of bookType){
+            var curr=[];
+            curr.push(item);
+            for(i=1;i<temp.length;i++){
+                var va=false;
+                for(var j=0;j<data.length;j++){
+                    if(data[j].bookType===item&&data[j].period===temp[i]){
+                        curr.push(data[j].cnt);
+                        va=true;
+                        break;
+                    }
+                }
+                if (va===false) curr.push(0);
+            }
+            ans.push(curr);
+        }
+        // 填入数据
+        console.log(ans);
+        console.log(con);
+        myChart.setOption({
+            dataset: {
+                source: ans
+            },
+            series: con
+        });
+    });
+    myChart.on('updateAxisPointer', function (event) {
+        var xAxisInfo = event.axesInfo[0];
+        if (xAxisInfo) {
+            var dimension = xAxisInfo.value + 1;
+            myChart.setOption({
+                series: {
+                    id: 'pie',
+                    label: {
+                        formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                    },
+                    encode: {
+                        value: dimension,
+                        tooltip: dimension
+                    }
+                }
+            });
+        }
+    });
+</script>
+<div th:replace="common :: myInfo"></div>
+<div th:replace="common :: myPw"></div>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form;
+    });
+</script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+        element.init();
+    });
+
+</script>
+<script>
+    // 展示修改密码界面
+    $('#parentIframe').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#info"),
+            cancel: function (index, layero) {
+                $("#info").hide();
+            }
+        });
+    });
+    // 展示基本资料界面
+    $('#parentIframe2').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#owninfo"),
+            cancel: function (index, layero) {
+                $("#owninfo").hide();
+            }
+        });
+    });
+</script>
+</body>
+</html>

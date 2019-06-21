@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>left</title>
+    <link rel="stylesheet" th:href="@{/css/layui.css}">
+    <script th:src="@{/layui.all.js}"></script>
+</head>
+<body>
+<left th:fragment="left">
+    <div class="layui-side layui-bg-black" id="left_side">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a href="/index">Dashboard</a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">用户</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/reader">网站用户</a></dd>
+                        <dd><a href="/manager">后台管理员</a></dd>
+                        <dd><a href="/reader">角色管理</a></dd>
+                    </dl>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">统计分析</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">实时访客</a></dd>
+                        <dd><a href="/bookAnalysis">图书分析</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</left>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/pagination.css}" media="all">
+    <script th:src="@{/layui.all.js}"></script>
+    <script th:src="@{/jquery-3.3.1.js}"></script>
+    <script th:src="@{/table_select.js}"></script>
+    <script th:src="@{/pagination.min.js}"></script>
+    <script th:src="@{/common.js}"></script>
+</head>
+<style>
+    .ldm {
+        position: absolute !important;
+        right: 20px;
+        top: 0;
+    }
+
+    .dom {
+        position: relative;
+        right: 0;
+        top: 0px;
+        bottom: 0;
+        z-index: 998;
+        width: auto;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .layui-badge {
+        position: absolute;
+        display: inline-block;
+        padding: 0 6px;
+        font-size: 12px;
+        text-align: center;
+        background-color: #FF5722;
+        color: #fff;
+        border-radius: 2px;
+    }
+
+    .m-header {
+        z-index: 1000;
+        height: 60px;
+        position: relative;
+    }
+
+    .myform {
+        padding-left: 30%;
+        margin-top: 10px;
+        margin-bottom: 50px;
+    }
+
+    .layui-input {
+        float: left;
+    }
+
+    .layui-btn {
+        float: left;
+    }
+
+     .layui-input, .layui-textarea {
+        display: block;
+        width: 406px;
+        padding-left: 10px;
+    }
+</style>
+<body th:onload="'javascript:getUrl(\''+${userId}+'\');'">
+<div th:replace="layout/header :: header"></div>
+<div class="dom">
+    <div class="myform">
+        <input type="text" onkeydown="javascript:if(event.keyCode==13) es_search();" id="search_content" autocomplete="off" class="layui-input"></input>
+        <button type="button" onclick="es_search()" class="layui-btn">搜索</button>
+    </div>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15" id="dd">
+        </div>
+    </div>
+    <div id="pagination-container"></div>
+</div>
+<div th:replace="common :: myInfo2"></div>
+<div th:replace="common :: myPw2"></div>
+<div th:replace="common :: lendBook"></div>
+<!--getUrl()-->
+<script th:inline="none">
+    function getUrl(id) {
+        $('#pagination-container').pagination({
+            dataSource: 'book/recommend', //请求的url
+            ajax: {
+                type: 'get',
+                url: '/book/recommend',
+                data: {
+                    "page": 1,
+                    "limit": 10000000,
+                    "userId": id
+                }
+            },
+            locator: 'list', //返回值data的位置
+            totalNumberLocator: function (res) { //返回值总数量的位置
+                return Math.floor(res.total);
+            },
+            numPerPage: 10,
+            pageRange: 1,
+            className: 'paginationjs-theme-blue',
+            prevText: '<&nbsp;上一页',
+            nextText: '下一页&nbsp;>',
+            showGoInput: true,
+            showGoButton: true,
+            callback: function (res, pagination) {   //回掉函数
+                console.log(res);
+                $.ajax({
+                    type: "get",
+                    url: "/book/recommend",
+                    data: {
+                        "page": pagination.pageNumber,
+                        "limit": 10,
+                        "userId": id
+                    },
+                    success: function (data) {
+                        $("#dd").empty();
+                        var v = data.list;
+                        for (i = 0; i < v.length; i++) {
+                            var bookName = v[i].bookName;
+                            var press = v[i].press;
+                            var author = v[i].author;
+                            var bookDesc = v[i].bookDesc;
+                            var photo = v[i].photo;
+                            var bookId = v[i].bookId;
+                            var comment = v[i].cnt;
+                            $("#dd").append("<div class=\"layui-col-sm6 layui-col-md3\" style=\"width: 240px;height: 441px;\" id=" + bookId + ">\n" +
+                                "\n" +
+                                "                <div class=\"layui-card\">\n" +
+                                "                    <img src=" + photo + " />\n" +
+                                "                    <div class=\"layui-card-header\">\n" + bookName +
+                                "                        <span class=\"layui-badge layui-bg-blue layuiadmin-badge\">" + bookId + "</span>\n" +
+                                "                    </div>\n" +
+                                "                    <div class=\"layui-card-body layuiadmin-card-list\">\n" +
+                                "                        <p>" + author + "</p>\n" +
+                                "<a href=/comment?bookId=" +
+                                bookId + "\ style=\"color: #646fb0\">" + comment + "</a>" + "条评价" +
+                                "                        <p>" + press + "</p>\n" +
+                                "                    </div>\n" +
+                                "                </div>\n" +
+                                "            </div>")
+                        }
+
+                    }
+                });
+
+            }
+        });
+    }
+</script>
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+        element.init();
+    });
+    layui.use('form', function () {
+        var form = layui.form;
+        form.val('example', {
+            "_sort": '借阅量'
+        })
+    });
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#date1'
+        });
+        laydate.render({
+            elem: '#date2'
+        });
+    });
+</script>
+<script>
+    // 展示修改密码界面
+    $('#parentIframe').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#info2"),
+            cancel: function (index, layero) {
+                $("#info2").hide();
+            }
+        });
+    });
+    // 展示基本资料界面
+    $('#parentIframe2').on('click', function () {
+        layer.open({
+            type: 1,
+            // title: 'iframe父子操作',
+            shadeClose: true, //点击遮罩关闭层
+            area: ['800px', '520px'],
+            content: $("#owninfo2"),
+            cancel: function (index, layero) {
+                $("#owninfo2").hide();
+            }
+        });
+    });
+</script>
+<!--搜索输入框-->
+<script>
+    var tableSelect = layui.tableSelect;
+    tableSelect.render({
+        elem: '#find_author',
+        checkedKey: 'inputId',
+        table: {
+            url: '/input/author'
+            , response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+            }
+            , parseData: function (res) {
+                return {
+                    "code": 200
+                    , "msg": ""
+                    , "count": res.total
+                    , "data": res.list
+                }
+            },
+            cols: [
+                [{
+                    type: 'radio'
+                },
+                    {
+                        field: 'inputId',
+                        title: 'ID'
+                    },
+                    {
+                        field: 'inputName',
+                        title: '作者'
+                    }
+                ]
+            ]
+        },
+        done: function (elem, data) {
+            var NEWJSON = []
+            layui.each(data.data, function (index, item) {
+                NEWJSON.push(item.inputName)
+            })
+            elem.val(NEWJSON.join(","))
+        }
+    });
+    tableSelect.render({
+        elem: '#find_press',
+        checkedKey: 'inputId',
+        table: {
+            url: '/input/press'
+            , response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+            }
+            , parseData: function (res) {
+                return {
+                    "code": 200
+                    , "msg": ""
+                    , "count": res.total
+                    , "data": res.list
+                }
+            },
+            cols: [
+                [{
+                    type: 'radio'
+                },
+                    {
+                        field: 'inputId',
+                        title: 'ID'
+                    },
+                    {
+                        field: 'inputName',
+                        title: '出版社'
+                    }
+                ]
+            ]
+        },
+        done: function (elem, data) {
+            var NEWJSON = []
+            layui.each(data.data, function (index, item) {
+                NEWJSON.push(item.inputName)
+            })
+            elem.val(NEWJSON.join(","))
+        }
+    });
+    tableSelect.render({
+        elem: '#find_type',
+        checkedKey: 'inputId',
+        table: {
+            url: '/input/type'
+            , response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+            }
+            , parseData: function (res) {
+                return {
+                    "code": 200
+                    , "msg": ""
+                    , "count": res.total
+                    , "data": res.list
+                }
+            },
+            cols: [
+                [{
+                    type: 'radio'
+                },
+                    {
+                        field: 'inputId',
+                        title: 'ID'
+                    },
+                    {
+                        field: 'inputName',
+                        title: '类型'
+                    }
+                ]
+            ]
+        },
+        done: function (elem, data) {
+            var NEWJSON = []
+            layui.each(data.data, function (index, item) {
+                NEWJSON.push(item.inputName)
+            })
+            elem.val(NEWJSON.join(","))
+        }
+    });
+    // 可选择多种类型
+    tableSelect.render({
+        elem: '#myInterest',
+        checkedKey: 'inputId',
+        table: {
+            url: '/input/type'
+            , response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+            }
+            , parseData: function (res) {
+                return {
+                    "code": 200
+                    , "msg": ""
+                    , "count": res.total
+                    , "data": res.list
+                }
+            },
+            cols: [
+                [{
+                    type: 'checkbox'
+                },
+                    {
+                        field: 'inputId',
+                        title: 'ID'
+                    },
+                    {
+                        field: 'inputName',
+                        title: '类型'
+                    }
+                ]
+            ]
+        },
+        done: function (elem, data) {
+            var NEWJSON = []
+            layui.each(data.data, function (index, item) {
+                NEWJSON.push(item.inputName)
+            })
+            elem.val(NEWJSON.join(","))
+        }
+    });
+</script>
+<script>
+    $(function () {
+        $('.layui-col-space15').on('click', '.layui-col-md3', function () {
+            var status = $(this).attr('id');
+            $.ajax({
+                type: "get",
+                url: "/book/find",
+                data: {
+                    "bookId": status
+                },
+                success: function (data) {
+                    $("#bookId").val(data.bookId);
+                    $("#bookName").val(data.bookName);
+                    $("#author").val(data.author);
+                    $("#press").val(data.press);
+                    $("#bookDate").val(data.bookDate);
+                    $("#bookType").val(data.bookType);
+                    $("#bookDesc").val(data.bookDesc);
+                    $("#bookImage").attr("src", data.photo);
+                    layer.open({
+                        type: 1,
+                        // title: 'iframe父子操作',
+                        shadeClose: true, //点击遮罩关闭层
+                        area: ['800px', '520px'],
+                        content: $("#show_row"),
+                        cancel: function (index, layero) {
+                            $("#show_row").hide();
+                        }
+                    });
+
+                }
+            });
+        })
+    })
+</script>
+<!--全文检索-->
+<script>
+    function es_search() {
+        var search_content=$("#search_content").val();
+        console.log(search_content);
+        $('#pagination-container').pagination({
+            dataSource: 'search/es', //请求的url
+            ajax: {
+                type: 'get',
+                url: '/search/es',
+                data: {
+                    "page": 1,
+                    "limit": 10000,
+                    "key": search_content.toString()
+                }
+            },
+            locator: 'list', //返回值data的位置
+            totalNumberLocator: function (res) { //返回值总数量的位置
+                return Math.floor(res.total);
+            },
+            numPerPage: 10,
+            pageRange: 1,
+            className: 'paginationjs-theme-blue',
+            prevText: '<&nbsp;上一页',
+            nextText: '下一页&nbsp;>',
+            showGoInput: true,
+            showGoButton: true,
+            callback: function (res, pagination) {   //回掉函数
+                console.log(res);
+                $.ajax({
+                    type: "get",
+                    url: "/search/es",
+                    data: {
+                        "page": pagination.pageNumber,
+                        "limit": 10,
+                        "key": search_content.toString()
+                    },
+                    success: function (data) {
+                        $("#dd").empty();
+                        var v = data.list;
+                        for (i = 0; i < v.length; i++) {
+                            var bookName = v[i].bookName;
+                            var press = v[i].press;
+                            var author = v[i].author;
+                            var bookDesc = v[i].bookDesc;
+                            var photo = v[i].photo;
+                            var bookId = v[i].bookId;
+                            var comment = v[i].cnt;
+                            $("#dd").append("<div class=\"layui-col-sm6 layui-col-md3\" style=\"width: 240px;height: 441px;\" id=" + bookId + ">\n" +
+                                "\n" +
+                                "                <div class=\"layui-card\">\n" +
+                                "                    <img src=" + photo + " />\n" +
+                                "                    <div class=\"layui-card-header\">\n" + bookName +
+                                "                        <span class=\"layui-badge layui-bg-blue layuiadmin-badge\">" + bookId + "</span>\n" +
+                                "                    </div>\n" +
+                                "                    <div class=\"layui-card-body layuiadmin-card-list\">\n" +
+                                "                        <p>" + author + "</p>\n" +
+                                "<a href=/comment?bookId=" +
+                                bookId + "\ style=\"color: #646fb0\">" + comment + "</a>" + "条评价" +
+                                "                        <p>" + press + "</p>\n" +
+                                "                    </div>\n" +
+                                "                </div>\n" +
+                                "            </div>")
+                        }
+
+                    }
+                });
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

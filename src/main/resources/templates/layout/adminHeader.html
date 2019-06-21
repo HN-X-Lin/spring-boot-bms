@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"></meta>
+        <title>footer</title>
+        <link rel="stylesheet" th:href="@{/css/layui.css}" media="all">
+        <script th:src="@{/jquery-3.3.1.js}"></script>
+    </head>
+    <header th:fragment="header">
+        <div class="layui-header">
+            <div class="layui-logo">BMS后台</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩" id="stretch">
+                        <i class="layui-icon layui-icon-spread-left" id="LAY_app_flexible"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <a href="/userIndex" target="_blank" title="前台">
+                        <i class="layui-icon layui-icon-website"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/bookManage">图书管理</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/record">历史记录</a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <img th:src="${myPhoto}" class="layui-nav-img">
+                        <span th:text="${myName}"></span>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="#" id="parentIframe2" th:onclick="'javascript:show_info(\''+${myId}+'\');'">基本资料</a>
+                        </dd>
+                        <dd>
+                            <a href="#" id="parentIframe">修改密码</a>
+                        </dd>
+                        <dd>
+                            <a href="/logout">退出</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+
+</html>

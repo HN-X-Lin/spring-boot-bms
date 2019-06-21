@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neo.dao.BookDao">
+    <sql id="BASE_TABLE">
+    book
+  </sql>
+
+    <insert id="insert" parameterType="com.neo.model.BookDomain">
+        INSERT INTO
+        <include refid="BASE_TABLE"/>
+        values(#{bookId},#{bookName},#{author},#{press},#{bookDate},#{bookType},#{bookDesc},#{photo})
+    </insert>
+
+    <select id="selectBooks" resultType="com.neo.model.BookDomain">
+        SELECT book.*,(SELECT COUNT(`comment`.bookId) FROM `comment` WHERE `comment`.bookId=book.bookId) AS cnt FROM
+        book
+        <where>
+            <if test="bookId!=0">
+                book.bookId=#{bookId}
+            </if>
+            <if test="bookName!='#'.toString()">
+                and bookName like #{bookName}
+            </if>
+            <if test="author!='#'.toString()">
+                and author=#{author}
+            </if>
+            <if test="press!='#'.toString()">
+                and press=#{press}
+            </if>
+            <if test="bookType!='#'.toString()">
+                and bookType=#{bookType}
+            </if>
+            <if test="date1!='#'.toString()">
+                and bookDate &gt;= #{date1}
+            </if>
+            <if test="date2!='#'.toString()">
+                and bookDate &lt;= #{date2}
+            </if>
+        </where>
+
+    </select>
+    <select id="selectBookByUser" resultType="com.neo.model.BookDomain">
+        SELECT book.*,cnt FROM book
+LEFT JOIN recommend ON recommend.bookId=book.bookId AND recommend.userId=#{userId}
+LEFT JOIN (SELECT `comment`.bookId,COUNT(*) AS cnt FROM `comment` GROUP BY `comment`.bookId) as t ON t.bookId=book.bookId
+LEFT JOIN (SELECT record.bookId,COUNT(*) AS num FROM record GROUP BY record.bookId) as tt ON tt.bookId=book.bookId
+LEFT JOIN (SELECT recommend.bookId,SUM(clickNum) as s FROM recommend GROUP BY recommend.bookId) as ttt ON ttt.bookId=book.bookId
+WHERE bookType in (SELECT myInterest FROM interest WHERE userId=#{userId})
+ORDER BY clickNum DESC,cnt DESC,num DESC,s DESC
+    </select>
+
+    <select id="selectBookById" resultType="com.neo.model.BookDomain">
+        SELECT
+        *
+        FROM
+        <include refid="BASE_TABLE"/>
+        where bookId=#{bookId}
+    </select>
+    <update id="update" parameterType="com.neo.model.BookDomain">
+        update
+        <include refid="BASE_TABLE"/>
+        set
+        bookName=#{bookName},author=#{author},press=#{press},bookDate=#{bookDate},bookType=#{bookType},bookDesc=#{bookDesc}
+        where bookId=#{bookId}
+    </update>
+    <delete id="delete">
+        DELETE FROM
+        <include refid="BASE_TABLE"/>
+        WHERE bookId=#{bookId}
+    </delete>
+    <select id="check" resultType="int">
+        select count(*) from
+        <include refid="BASE_TABLE"/>
+        where bookId=#{bookId}
+    </select>
+    <select id="selectTypes" resultType="com.neo.model.BookDomain">
+        SELECT bookType,COUNT(bookType) AS cnt FROM book GROUP BY bookType ORDER BY cnt ASC
+    </select>
+    <select id="selectBooksByLend" resultType="com.neo.model.BookDomain">
+     SELECT book.*,cnt FROM book
+LEFT JOIN (SELECT `comment`.bookId,COUNT(*) AS cnt FROM `comment` GROUP BY `comment`.bookId) as t ON t.bookId=book.bookId
+LEFT JOIN (SELECT record.bookId,COUNT(*) AS num FROM record WHERE operation='借阅' GROUP BY record.bookId) as tt ON tt.bookId=book.bookId
+ORDER BY num DESC,cnt DESC
+    </select>
+    <select id="selectBooksByComment" resultType="com.neo.model.BookDomain">
+    SELECT book.*,cnt FROM book
+LEFT JOIN (SELECT `comment`.bookId,COUNT(*) AS cnt FROM `comment` GROUP BY `comment`.bookId) as t ON t.bookId=book.bookId
+LEFT JOIN (SELECT record.bookId,COUNT(*) AS num FROM record WHERE operation='借阅' GROUP BY record.bookId) as tt ON tt.bookId=book.bookId
+ORDER BY cnt DESC,num DESC
+    </select>
+    <select id="selectBooksByTime" resultType="com.neo.model.BookDomain">
+SELECT book.*,cnt FROM book
+LEFT JOIN (SELECT `comment`.bookId,COUNT(*) AS cnt FROM `comment` GROUP BY `comment`.bookId) as t ON t.bookId=book.bookId
+LEFT JOIN (SELECT record.bookId,COUNT(*) AS num FROM record WHERE operation='借阅' GROUP BY record.bookId) as tt ON tt.bookId=book.bookId
+ORDER BY bookDate DESC,cnt DESC,num DESC
+    </select>
+</mapper>
