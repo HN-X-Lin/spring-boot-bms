@@ -55,8 +55,7 @@ public class BookController {
             Integer bookId,String bookName,String author,String press,String bookType,String date1,String date2){
         if(!bookName.equals("#")) bookName="%"+bookName+"%";
         System.out.println(bookId+" "+bookName+" "+author+" "+press+" "+bookType+" "+date1+" "+date2);
-//        searchService.delete(0);
-//        PageInfo<BookDomain> object=bookService.findAllBook(0,100,0,"#","#","#","#","#","#");
+//        PageInfo<BookDomain> object=bookService.findAllBook(1,100,0,"#","#","#","#","#","#");
 //        List<BookDomain> list=object.getList();
 //        for(int i=0;i<list.size();i++){
 //            BookDomain bookDomain=list.get(i);

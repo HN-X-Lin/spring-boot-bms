@@ -37,21 +37,6 @@ public class SearchController {
                                      @RequestParam(name = "limit", required = false, defaultValue = "10")
                                              int pageSize, String key){
         System.out.println(key);
-//        Pageable pageable=PageRequest.of(pageNum-1,pageSize);
-//        BoolQueryBuilder boolQueryBuilder= QueryBuilders.boolQuery();
-//        boolQueryBuilder.filter(QueryBuilders.multiMatchQuery(key,"bookName","author","press","bookType"));
-//        HighlightBuilder highlightBuilder=new HighlightBuilder();
-//        highlightBuilder.preTags("<span style='color:red'>");
-//        highlightBuilder.postTags("</span>");
-//        highlightBuilder.field("bookName");
-//        highlightBuilder.field("author");
-//        highlightBuilder.field("press");
-//        // 创建搜索 DSL 查询
-//        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-//                .withPageable(pageable)
-//                .withQuery(boolQueryBuilder)
-//                .withHighlightFields(new HighlightBuilder.Field("bookName").preTags("<span style='color:red'>").postTags("</span>"))
-//                .build();
         return searchService.search(pageNum, pageSize, key);
     }
 }

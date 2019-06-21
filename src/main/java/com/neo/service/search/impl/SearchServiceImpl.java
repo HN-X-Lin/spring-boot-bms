@@ -42,10 +42,11 @@ public class SearchServiceImpl implements SearchService {
     }
     @Override
     public void delete(int bookId){
-        searchDao.deleteAll();
+        searchDao.deleteById(bookId);
     }
     @Override
     public PageInfo<SearchDomain> search(int pageNum, int pageSize,String key){
+        System.out.println(pageNum+" "+pageSize+" "+key);
         PageHelper.startPage(pageNum, pageSize);
         Client client = esConfig.esTemplate();
         BoolQueryBuilder boolQueryBuilder= QueryBuilders.boolQuery();
@@ -59,12 +60,16 @@ public class SearchServiceImpl implements SearchService {
         //搜索数据
         SearchResponse response = client.prepareSearch("mytest")
                 .setQuery(boolQueryBuilder)
-                .highlighter(highlightBuilder)
+                .highlighter(highlightBuilder).setSize(10000)
                 .execute().actionGet();
         SearchHits searchHits = response.getHits();
         System.out.println(searchHits.getTotalHits());
         List<SearchDomain> list = new ArrayList<>();
+        int ans=0;
         for(SearchHit hit : searchHits) {
+            ans++;
+            if(ans<=(pageNum-1)*pageSize) continue;
+            if(ans>pageNum*pageSize) break;
             boolean flag1=true,flag2=true,flag3=true;
             SearchDomain entity = new SearchDomain();
             Map<String, Object> entityMap = hit.getSourceAsMap();

@@ -34,7 +34,7 @@
     </select>
     <select id="selectUserById" resultType="com.neo.model.UserDomain">
         SELECT t_user.*,myInterest FROM `t_user` RIGHT JOIN interest
-        ON t_user.userId=interest.userId WHERE t_user.userId=#{userId};
+        ON t_user.userId=interest.userId WHERE t_user.userId=#{userId}
     </select>
     <select id="login" resultType="com.neo.model.UserDomain">
         select * from t_user where userId=#{userId} and userPw=#{userPw}
@@ -62,6 +62,6 @@
         where userId=#{userId}
     </delete>
     <insert id="insertInterest">
-        insert into interest(userId,myInterest) values(#{userId},#{myInterest});
+        insert into interest(userId,myInterest) values(#{userId},#{myInterest})
     </insert>
 </mapper>
