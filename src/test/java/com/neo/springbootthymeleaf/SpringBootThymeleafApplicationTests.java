@@ -30,6 +30,7 @@ public class SpringBootThymeleafApplicationTests {
     }
     @Test
     public void get(){
+    	System.out.println("git test");
     }
 
 }
