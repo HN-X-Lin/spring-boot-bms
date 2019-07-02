@@ -13,6 +13,7 @@ MyBatis | ORM框架  | 3.4.6 | [http://www.mybatis.org/mybatis-3/zh/index.html](
 Elasticsearch | 搜索引擎 | 6.2.4 | [https://www.elastic.co/cn/](https://www.elastic.co/cn/)
 Thymeleaf | 模板引擎 | 3.0.11 | [https://www.thymeleaf.org/](https://www.thymeleaf.org/)
 
+# 预览
 ![全文检索界面](https://github.com/1705030118/spring-boot-bms/blob/master/src/main/resources/static/images/fireshot/1.png?raw=true)
 ![复杂查询界面](https://github.com/1705030118/spring-boot-bms/blob/master/src/main/resources/static/images/fireshot/2.png?raw=true)
 ![Dashboard界面](https://github.com/1705030118/spring-boot-bms/blob/master/src/main/resources/static/images/fireshot/4.png?raw=true)
